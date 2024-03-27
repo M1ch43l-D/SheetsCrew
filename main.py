@@ -1,11 +1,24 @@
+import os
 from crewai import Crew, Process
 from langchain_openai import ChatOpenAI
 from agents import AINewsLetterAgents
 from tasks import AINewsLetterTasks
 from file_io import save_markdown
-
 from dotenv import load_dotenv
 load_dotenv()
+
+llm_lmstudio = ChatOpenAI(
+    openai_api_base="http://localhost:1234/v1",
+    openai_api_key="",
+    model_name="mixtral"
+)
+
+
+os.environ["OPENAI_API_KEY"] = "Null"
+openai_api_base = "http://localhost:1234/v1"
+llm = ChatOpenAI(model_name="gpt-3.5", temperature=0.7, openai_api_base=openai_api_base)
+
+
 
 # Initialize the agents and tasks
 agents = AINewsLetterAgents()
@@ -15,7 +28,6 @@ tasks = AINewsLetterTasks()
 OpenAIGPT4 = ChatOpenAI(
     model="gpt-4"
 )
-
 
 # Instantiate the agents
 editor = agents.editor_agent()
