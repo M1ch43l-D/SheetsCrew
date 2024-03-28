@@ -5,7 +5,7 @@ description = "AI News Letter"
 authors = ["Joao Moura, Brandon Hancock"]
 
 [tool.poetry.dependencies]
-python = ">=3.10.0,<3.12"
+python = "3.12.2"
 crewai = "^0.11.0"
 duckduckgo-search = "^4.4.2"
 python-dotenv = "^1.0.1"

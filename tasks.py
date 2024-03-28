@@ -2,7 +2,7 @@ from datetime import datetime
 from crewai import Task
 
 
-class AINewsLetterTasks():
+class SheetsTasks():
     def fetch_news_task(self, agent):
         return Task(
             description=f'Fetch top AI news stories from the past 24 hours. The current time is {datetime.now()}.',

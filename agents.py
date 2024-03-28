@@ -1,8 +1,10 @@
 from crewai import Agent
 from tools.search_tool import SearchTools
+from tools.browser_tool import BrowserTools
+from tools.calculator_tool import CalculatorTools
+from tools.search_tool import SearchTools
 
-
-class AINewsLetterAgents():
+class SheetsCrew():
     def editor_agent(self):
         return Agent(
             role='Editor',
@@ -14,9 +16,9 @@ class AINewsLetterAgents():
             max_iter=15
         )
 
-    def researcher_agent(self):
+    def research_analyst_agent(self):
         return Agent(
-            role='Senior Researcher',
+            role='Research Analyst Agent',
             goal='Fetch the top AI news stories for the day',
             backstory="""As a digital sleuth, you scour the internet for the latest and most impactful developments
             in the world of AI, ensuring that our readers are always in the know.""",
@@ -25,3 +27,23 @@ class AINewsLetterAgents():
             allow_delegation=True,
         )
 
+    def news_analyzer_agent(self):
+        return Agent(
+            role='NewsAnalyzer',
+            goal='Analyze each news story and generate a detailed markdown summary',
+            backstory="""With a critical eye and a knack for distilling complex information, you provide insightful
+            analyses of AI news stories, making them accessible and engaging for our audience.""",
+            tools=[SearchTools.search_internet],
+            verbose=True,
+            allow_delegation=True,
+        )
+
+    def newsletter_compiler_agent(self):
+        return Agent(
+            role='NewsletterCompiler',
+            goal='Compile the analyzed news stories into a final newsletter format',
+            backstory="""As the final architect of the newsletter, you meticulously arrange and format the content,
+            ensuring a coherent and visually appealing presentation that captivates our readers. Make sure to follow
+            newsletter format guidelines and maintain consistency throughout.""",
+            verbose=True,
+        )
