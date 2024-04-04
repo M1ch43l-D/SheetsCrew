@@ -1,8 +1,9 @@
+qualified-world-414006-0223c92c9791.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+.gitignore
 # C extensions
 *.so
 

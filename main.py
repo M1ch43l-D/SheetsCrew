@@ -8,8 +8,11 @@ from file_io import save_markdown
 from dotenv import load_dotenv
 load_dotenv()
 
+
 os.environ["OPENAI_API_KEY"] = "NULL"
 os.environ["openai_api_base"] = "http://localhost:1234/v1"
+
+service_account_file = os.getenv('SERVICE_ACCOUNT_FILE')
 
 # Initialize the agents and tasks
 agents = SheetsCrew()
@@ -21,28 +24,24 @@ Mixtral = ChatOpenAI(
 )
 
 # Instantiate the agents
-editor = agents.editor_agent()
-research_analyst_agent = agents.research_analyst_agent()
-news_analyzer = agents.news_analyzer_agent()
-newsletter_compiler = agents.newsletter_compiler_agent()
+sheets_auditor_agent = agents.sheets_auditor_agent()
+researcher_agent = agents.researcher_agent()
 
 # Instantiate the tasks
-fetch_news_task = tasks.fetch_news_task(research_analyst_agent)
-analyze_news_task = tasks.analyze_news_task(news_analyzer, [fetch_news_task])
-compile_newsletter_task = tasks.compile_newsletter_task(
-    newsletter_compiler, [analyze_news_task], save_markdown)
+identify_research_task = tasks.identify_research_task(sheets_auditor_agent)
+research_task = tasks.research_task(researcher_agent)
+update_sheet_task = tasks.update_sheet_task(sheets_auditor_agent)
+
+spreadsheet_id = 'spreadsheet_id'
 
 crew = Crew(
-    agents=[editor, research_analyst_agent, news_analyzer, newsletter_compiler],
-    tasks=[fetch_news_task, analyze_news_task, compile_newsletter_task],
-    process=Process.hierarchical,
+    agents=[sheets_auditor_agent, researcher_agent],
+    tasks=[identify_research_task, research_task, update_sheet_task],
+    process=Process.sequential,
     manager_llm=Mixtral,
     verbose=2
 )
 
 # Kick off the crew's work
-results = crew.kickoff()
-
-# Print the results
-print("Crew Work Results:")
+results = crew.kickoff(inputs={'spreadsheet_id': spreadsheet_id})
 print(results)

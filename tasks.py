@@ -1,62 +1,56 @@
 from datetime import datetime
 from crewai import Task
-
+from tools.sheet_tool import GoogleSheetsTool  # Assuming this is your custom tool for Google Sheets operations
+from tools.search_tool import SearchTools  # Ensure this is the correct path and class name
 
 class SheetsTasks():
-    def fetch_news_task(self, agent):
+    def __init__(self):
+        # Correct tool initialization
+        self.sheet_read_tool = GoogleSheetsTool()  
+        self.search_tool = SearchTools()  
+        self.sheet_write_tool = GoogleSheetsTool()
+
+    def identify_research_task(self, agent, spreadsheet_id, range):
+        # Use the correct tool and pass proper context
         return Task(
-            description=f'Fetch top AI news stories from the past 24 hours. The current time is {datetime.now()}.',
+            description=f'Identify rows with missing information in the Google Sheet as of {datetime.now()} and specify the information that needs to be researched.',
             agent=agent,
             async_execution=True,
-            expected_output="""A list of top AI news story titles, URLs, and a brief summary for each story from the past 24 hours. 
-                Example Output: 
-                [
-                    {  'title': 'AI takes spotlight in Super Bowl commercials', 
-                    'url': 'https://example.com/story1', 
-                    'summary': 'AI made a splash in this year\'s Super Bowl commercials...'
-                    }, 
-                    {{...}}
-                ]
-            """
+            tools=[self.sheet_read_tool],  # Correct tool reference
+            context={'spreadsheet_id': spreadsheet_id, 'range': range},  # Pass necessary context for the task
+            expected_output="""A structured request for the Researcher, detailing what information needs to be gathered for each missing entry in the Google Sheet. 
+            Example Output: 
+            [
+                {'row': 3, 'data': {'Date': '2024-04-03', 'Summary': 'An overview of AI advancements.'}}, 
+                {'row': 7, 'data': {'URL': 'https://example.com/full-article'}}
+            ]"""
         )
 
-    def analyze_news_task(self, agent, context):
+    def research_task(self, agent, context):
+        # Ensure context is correctly passed and used
         return Task(
-            description='Analyze each news story and ensure there are at least 5 well-formatted articles',
+            description='Conduct research based on the specifics provided by the Sheets Auditor and prepare the findings for sheet update.',
             agent=agent,
             async_execution=True,
-            context=context,
-            expected_output="""A markdown-formatted analysis for each news story, including a rundown, detailed bullet points, 
-                and a "Why it matters" section. There should be at least 5 articles, each following the proper format.
-                Example Output: 
-                '## AI takes spotlight in Super Bowl commercials\n\n
-                **The Rundown:
-                ** AI made a splash in this year\'s Super Bowl commercials...\n\n
-                **The details:**\n\n
-                - Microsoft\'s Copilot spot showcased its AI assistant...\n\n
-                **Why it matters:** While AI-related ads have been rampant over the last year, its Super Bowl presence is a big mainstream moment.\n\n'
-            """
+            tools=[self.search_tool],  # Correct tool reference
+            context=context,  # This context should be the output from the identify_research_task
+            expected_output="""A detailed report containing the researched information, structured for easy insertion into the Google Sheet by the Sheets Auditor. 
+            Example Output: 
+            [
+                {'row': 4, 'findings': ['AI advancements include...', 'Recent controversies in AI ethics...']},
+                {'row': 7, 'findings': ['Notable upcoming AI conferences include...', 'Emerging AI startups to watch...']}
+            ]"""
         )
 
-    def compile_newsletter_task(self, agent, context, callback_function):
+    def update_sheet_task(self, agent, context):
+        # Correctly use the write tool and ensure context is detailed for updates
         return Task(
-            description='Compile the newsletter',
+            description='Update the Google Sheet with the information provided by the Researcher, ensuring each piece of data is placed in the correct row and column.',
             agent=agent,
-            context=context,
-            expected_output="""A complete newsletter in markdown format, with a consistent style and layout.
-                Example Output: 
-                '# Top stories in AI today:\\n\\n
-                - AI takes spotlight in Super Bowl commercials\\n
-                - Altman seeks TRILLIONS for global AI chip initiative\\n\\n
-
-                ## AI takes spotlight in Super Bowl commercials\\n\\n
-                **The Rundown:** AI made a splash in this year\'s Super Bowl commercials...\\n\\n
-                **The details:**...\\n\\n
-                **Why it matters::**...\\n\\n
-                ## Altman seeks TRILLIONS for global AI chip initiative\\n\\n
-                **The Rundown:** OpenAI CEO Sam Altman is reportedly angling to raise TRILLIONS of dollars...\\n\\n'
-                **The details:**...\\n\\n
-                **Why it matters::**...\\n\\n
-            """,
-            callback=callback_function
+            async_execution=True,
+            tools=[self.sheet_write_tool],  # Correct tool reference
+            context=context,  # This context should be the output from the research_task
+            expected_output="""Confirmation that the Google Sheet has been updated with all the necessary information in the correct locations. 
+            Example Output: 
+            'Updated rows 4 and 7 with the researched information. The sheet now contains the latest AI advancements and ethics controversies, as well as upcoming AI conferences and significant AI startups.'"""
         )
