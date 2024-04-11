@@ -20,6 +20,7 @@ Mixtral = ChatOpenAI(
     model="Mixtral"
 )
 
+
 # Instantiate the agents
 editor = agents.editor_agent()
 news_fetcher = agents.news_fetcher_agent()

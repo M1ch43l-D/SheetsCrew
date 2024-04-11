@@ -15,7 +15,7 @@ client = openai.OpenAI(
 )
 
 # Setup Google Sheets
-spread_sheets_id = os.getenv('SPREAD_SHEETS_ID')
+spread_sheets_id = os.getenv('SPREAD_SHEET_ID')
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 credentials_path = os.getenv('GOOGLE_SHEETS_CREDENTIALS_PATH')
 credentials = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
