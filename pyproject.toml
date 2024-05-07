@@ -11,9 +11,14 @@ langchain = "0.1.10"
 langchain-community = "^0.0.25"
 requests = "^2.31.0"
 langchain-openai = "0.0.5"
-crewai = "^0.28.4"
 crewai-tools = "0.0.16"
 pydantic = "2.6.4"
+crewai = "^0.11.0"
+python-dotenv = "1.0.0"
+opencv-python = "4.8.1.78"
+google-search-results = "2.4.2"
+langchain-groq = "^0.0.1"
+
 
 [tool.pyright]
 # https://github.com/microsoft/pyright/blob/main/docs/configuration.md

@@ -1,0 +1,22 @@
+# Defines the tasks that will be managed by the agents
+tasks:
+  - name: IdentifyMissingData
+    description: "Identify missing data points in Google Sheets."
+    expected_output: "List of columns with missing data."
+    agent: "DataReaderAgent"
+    tools:
+      - "GoogleSheetsAPI"
+
+  - name: FindLinkedInProfiles
+    description: "Research and find LinkedIn profiles for given company names."
+    expected_output: "LinkedIn profile URLs."
+    agent: "ResearchAgent"
+    tools:
+      - "WebSearchTool"
+
+  - name: UpdateGoogleSheets
+    description: "Update Google Sheets with researched information."
+    expected_output: "All missing information is filled in the sheet."
+    agent: "DataWriterAgent"
+    tools:
+      - "GoogleSheetsAPI"
